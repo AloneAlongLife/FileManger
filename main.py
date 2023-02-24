@@ -22,27 +22,32 @@ async def index(path: Optional[str] = None):
         content = await index_file.read()
     path = ALLOW_PATH.root if path in ("/", None) else path
 
-    check_res = not check(path)
+    check_res = check(path)
     if check_res is False:
-        return error_403()
+        return await error_403()
     elif check_res is None:
-        return error_404()
+        return await error_404()
 
     path = abspath(path)
     if isdir(path):
+        upper_path = abspath(join(path, ".."))
+        add_list = ["<div><a href=\"/?path={}\">..</a></div>".format(upper_path.replace("\\", "/"))] if check(upper_path) else []
         content = content.replace("$LOCATION", path)
         content = content.replace(
             "$LIST",
-            "\n            ".join([
-                "<a href=\"/?path={}\">{}</a>".format(
-                    quote(filepath.replace('\\', '/')), basename(filepath))
-                for filepath in filter(check, map(lambda target: abspath(join(path, target)), listdir(path)))
-            ])
+            "\n".join(
+                add_list + 
+                [
+                    "<div><a href=\"/?path={}\">{}</a> - {}</div>".format(
+                        quote(filepath.replace('\\', '/')), basename(filepath), "dir" if isdir(filepath) else "file")
+                    for filepath in filter(check, map(lambda target: abspath(join(path, target)), listdir(path)))
+                ]
+            )
         )
         return HTMLResponse(content)
     if isfile(path):
         return FileResponse(path, filename=basename(path) or "Unknow", content_disposition_type="inline")
-    return error_404()
+    return await error_404()
 
 
 @app.exception_handler(403)
