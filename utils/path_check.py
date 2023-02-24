@@ -6,14 +6,14 @@ def check(path: str) -> bool:
     try:
         path = abspath(path)
         allow_commons = tuple(filter(lambda a_path: samefile(
-            commonpath((path, a_path)), a_path), abspath(ALLOW_PATH.allow)))
+            commonpath((path, a_path)), a_path), map(abspath, ALLOW_PATH.allow)))
         if len(allow_commons) == 0:
             return False
         exclude_commons = tuple(filter(lambda e_path: samefile(
-            commonpath((path, e_path)), e_path), abspath(ALLOW_PATH.exclude)))
+            commonpath((path, e_path)), e_path), map(abspath, ALLOW_PATH.exclude)))
         if len(exclude_commons) != 0:
             return False
         return True
-    except Exception:
+    except Exception as e:
+        print(e)
         return None
-    
