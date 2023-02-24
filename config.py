@@ -1,6 +1,4 @@
-from os.path import abspath
-
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field
 
 
 class Config(BaseModel):
@@ -13,13 +11,13 @@ class AllowPath(BaseModel):
     allow: list[str] = Field([".."])
     exclude: list[str] = Field(["."])
 
-    @validator("root", always=True)
-    def path_validator(cls, value: str):
-        return abspath(value)
+    # @validator("root", always=True)
+    # def path_validator(cls, value: str):
+    #     return abspath(value)
 
-    @validator("allow", "exclude", always=True)
-    def path_list_validator(cls, values: list[str]):
-        return list(map(abspath, values))
+    # @validator("allow", "exclude", always=True)
+    # def path_list_validator(cls, values: list[str]):
+    #     return list(map(abspath, values))
 
 
 try:

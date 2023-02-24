@@ -1,9 +1,9 @@
 {
-  "root": "E:\\Code\\Python",
+  "root": "..",
   "allow": [
-    "E:\\Code\\Python"
+    ".."
   ],
   "exclude": [
-    "E:\\Code\\Python\\FileManger"
+    "."
   ]
 }
