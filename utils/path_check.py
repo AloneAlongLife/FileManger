@@ -14,6 +14,5 @@ def check(path: str) -> bool:
         if len(exclude_commons) != 0:
             return False
         return True
-    except Exception as e:
-        print(e)
+    except Exception:
         return None

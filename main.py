@@ -1,25 +1,25 @@
 from config import ALLOW_PATH, CONFIG
-from utils import check, error_403, error_404
+from utils import check, error_403, error_404, error_500
 
 from os import listdir
 from os.path import abspath, basename, isdir, isfile, join
 from typing import Optional
-from urllib.parse import quote
+from urllib.parse import quote, unquote
 
 from aiofiles import open as aopen
 from fastapi import FastAPI
-from fastapi.responses import FileResponse, HTMLResponse, JSONResponse
+from fastapi.responses import FileResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from uvicorn import Config, Server
 
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
-
 @app.get("/")
 async def index(path: Optional[str] = None):
     async with aopen("index.html") as index_file:
         content = await index_file.read()
+    path = unquote(path)
     path = abspath(ALLOW_PATH.root) if path in ("/", None) else path
 
     check_res = check(path)
@@ -58,6 +58,11 @@ async def access_denied(requests, exc):
 @app.exception_handler(404)
 async def not_found(requests, exc):
     return await error_404()
+
+
+@app.exception_handler(500)
+async def internal_server_error(requests, exc):
+    return await error_500()
 
 
 def run():
