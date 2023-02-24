@@ -20,7 +20,7 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 async def index(path: Optional[str] = None):
     async with aopen("index.html") as index_file:
         content = await index_file.read()
-    path = ALLOW_PATH.root if path in ("/", None) else path
+    path = abspath(ALLOW_PATH.root) if path in ("/", None) else path
 
     check_res = check(path)
     if check_res is False:
